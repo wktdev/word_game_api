@@ -1,0 +1,109 @@
+ Registration
+
+Simplified overall steps:
+
+1. Register and encode user data with bcrypt, store in database
+2. In the same route...Get the data back immiediatly and encode with JWT
+3. In the same route...Send to browser to store in local storage
+4. When user request data get local storage JWT, decode it and check database for user & email.
+5. If TRUE, then return protected data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Prequisite. You will need to add middleware to allow for CORS (cross orgin resource sharing)
+
+ app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
+//_______________________________________________________________________BEGIN part 1
+
+ 0. On the client create a POST form using JQuery to send email, username and password
+ 1. On the server create a post route /register that captures email, username and password.
+ 2. In the post route use bycrypt to encryped the password:
+
+    bcrypt.hashSync(req.body.password, salt);
+    const salt = bcrypt.genSaltSync(10);
+
+
+ 3. Save data to database
+ 4. Write conditional to send user feedback if email is already in use
+
+ //______________________________________________________________________END part 1
+
+ 
+
+
+
+
+
+ //______________________________________________________________________BEGIN part 2
+
+ 1. Immediatley (in the same route) retrive the same username and password from database via an email query search
+ 2. Encode these with JWT
+ 3. return a json object to the client via the return callback of the same JQuery post used to send the initial data
+ 4. Store this data in localstorage
+ 5. On server create a GET route called api/level 
+ 6. Send request for level data via POST. Send the jwt string with it. 
+
+
+ //_______________________________________________________________________ END part 2
+
+
+
+
+
+
+//________________________________________________________________________BEGIN part 3
+
+
+  1.On server /api/level route get localstorage jwt , decode it and quesy the database for the email and password. 
+  If this evaluates to true then return level data
+
+
+***ALTERNATIVE****
+
+ 1. Use middleware to check for the existance of the JWT and match against user in database via email and password
+ 2. If middleware returns "active user TRUE" then give user access to /api
+
+ //_______________________________________________________________________END part 3
+
+
+
+
+
+
+ //_______________________________________________________________________BEGIN part 4
+
+  1. Log out user by erasing localstorage variable
+
+ //________________________________________________________________________END part 4
+
+
+
+
+
+
+
+ //________________________________________________________________________BEGIN part 5
+
+  1. Implement email password reset 
+ //________________________________________________________________________END part 5
