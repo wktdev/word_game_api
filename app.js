@@ -1,10 +1,10 @@
 'use strict';
 
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
-var jwt = require("jwt-simple");
-var path = require('path');
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+const jwt = require("jwt-simple");
+const path = require('path');
 const Sequelize = require("sequelize");
 const connection = new Sequelize("wordapp", "root", "password");
 const bcrypt = require("bcryptjs");
@@ -71,12 +71,21 @@ app.post("/login", function(req, res) {
             var correctPassword = bcrypt.compareSync(enteredPassword, user.password);
 
             if (correctPassword) {
-                console.log("User exists")
+                var payload = { username: user.username, email: user.email, password: user.password }
+                console.log("User is found - they should now be logged in__________")
+                console.log(payload);
+                var token = jwt.encode(payload, secret);
+                res.json(token);
+
             } else {
-                console.log("Email or password is invalid")
+
+                console.log("Email or password is invalid");
+                
             }
         } else {
-            console.log("That email is invalid")
+
+            console.log("That email is invalid");
+
         }
     });
 
