@@ -21,6 +21,8 @@ var secret = 'aliens';
 
 //______________________________________________________________BEGIN user model
 
+
+
 const User = connection.define("user", {
     username: {
         type: Sequelize.STRING
@@ -53,6 +55,15 @@ app.use(function(req, res, next) {
 
 //_____________________________________________________________END enable CORS
 
+app.get("/",function(req,res){
+    res.send("Home page")
+});
+
+
+app.get("/drop",function(req, res){
+    User.drop();
+    res.redirect("/");
+});
 
 
 
@@ -80,11 +91,12 @@ app.post("/login", function(req, res) {
             } else {
 
                 console.log("Email or password is invalid");
+                 res.status(404).json("Email or password is invalid")
                 
             }
         } else {
 
-            console.log("That email is invalid");
+             res.status(404).json("Email or password is invalid")
 
         }
     });
