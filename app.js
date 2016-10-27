@@ -25,16 +25,19 @@ var secret = 'aliens';
 
 const User = connection.define("user", {
     username: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false
     },
 
     email: {
         type: Sequelize.STRING,
-        unique: true
+        unique: true,
+        allowNull:false
 
     },
     password: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull:false
     }
 
 });
@@ -125,7 +128,7 @@ app.post("/register", function(req, res) {
         if (user) {
 
             console.log("-------EMAIL IS IN USE -----");
-            res.status(409).json('internal server error');
+            res.status(409).json('Email already in use');
 
 
         } else {
@@ -141,7 +144,7 @@ app.post("/register", function(req, res) {
             res.json(token);
 
         }
-    });
+    })
 
 
 });

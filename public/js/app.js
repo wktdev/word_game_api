@@ -25,21 +25,20 @@ $(function() {
             password: $password
         }, function(data) {
 
-            if (data !== 404) {
+            if (data) {
 
                 localStorage.setItem("wordmill_jwt", data);
                 $(".login-validation").text("Currently Logged In. Click Here To Log Out");
                 console.log("logged in");
 
-
-            } else {
-
-                console.log(data)
-                $(".flash-message").text(data)
-            }
+            } 
 
         }).fail(function(response) {
-            alert('Error: ' + response.responseText);
+            $(".flash-message").text(response.responseJSON);
+
+            for(var prop in response){
+                console.log(prop + ":" + response[prop])
+            }
         });
     });
 
@@ -73,7 +72,7 @@ $(function() {
             email: $email,
             password: $password
         };
-        console.log(user)
+       
 
         $.post(website + "/register", {
             username: $username,
@@ -82,24 +81,18 @@ $(function() {
         }, function(data) {
             localStorage.removeItem("wordmill_jwt");
 
-
-
-            if (data !== 404) {
+            if (data) {
 
                 localStorage.setItem("wordmill_jwt", data);
                 $(".login-validation").text("Currently Logged In. Click Here To Log Out");
 
-            } else {
+            } 
 
-                console.log(data)
-                $(".flash-message").text("Either that email is already in use your you typed the wrong password")
-            }
-
+        }).fail(function(response){
+            $(".flash-message").text(response.responseJSON);
         });
 
     });
     //___________________________________________________END register
-
-
 
 });
