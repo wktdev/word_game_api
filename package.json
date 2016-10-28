@@ -12,6 +12,7 @@
     "bcryptjs": "^2.3.0",
     "express": "^4.14.0",
     "mysql": "^2.11.1",
-    "sequelize": "^3.24.6"
+    "sequelize": "^3.24.6",
+    "validator.js": "^2.0.3"
   }
 }

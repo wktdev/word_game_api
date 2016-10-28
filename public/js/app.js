@@ -3,7 +3,7 @@ $(function() {
     var website = "http://localhost:3000";
 
     $(".login-validation").on("click", function() {
-
+        $(".flash-message").text("");
         if ($(this).text() === "Currently Logged In. Click Here To Log Out") {
             localStorage.removeItem("wordmill_jwt");
             $(this).text("Not Logged In ")
@@ -16,6 +16,7 @@ $(function() {
     $('.user-login').on('submit', function(e) {
 
         e.preventDefault();
+        $(".flash-message").text("");
         localStorage.removeItem("wordmill_jwt");
         var $email = $("input[name='login-email']").val();
         var $password = $("input[name='login-password']").val();
@@ -63,6 +64,7 @@ $(function() {
 
     $('.user-register').on('submit', function(e) {
         e.preventDefault();
+        $(".flash-message").text("");
         localStorage.removeItem("wordmill_jwt");
         var $username = $("input[name='username']").val();
         var $email = $("input[name='email']").val();
