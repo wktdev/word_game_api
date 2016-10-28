@@ -2,6 +2,7 @@
 
 const express = require("express");
 const app = express();
+const validator = require("validator")
 const bodyParser = require("body-parser");
 const jwt = require("jwt-simple");
 const path = require('path');
@@ -26,18 +27,23 @@ var secret = 'aliens';
 const User = connection.define("user", {
     username: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false
     },
 
     email: {
         type: Sequelize.STRING,
         unique: true,
-        allowNull:false
+        allowNull: false,
+        validate:  {
+            isEmail: {
+                msg: "Email address must be valid"
+            }
+        }
 
     },
     password: {
         type: Sequelize.TEXT,
-        allowNull:false
+        allowNull: false
     }
 
 });
@@ -58,12 +64,12 @@ app.use(function(req, res, next) {
 
 //_____________________________________________________________END enable CORS
 
-app.get("/",function(req,res){
-    res.send("Home page")
+app.get("/", function(req, res) {
+    res.send("Home page");
 });
 
 
-app.get("/drop",function(req, res){
+app.get("/drop", function(req, res) {
     User.drop();
     res.redirect("/");
 });
@@ -85,8 +91,14 @@ app.post("/login", function(req, res) {
             var correctPassword = bcrypt.compareSync(enteredPassword, user.password);
 
             if (correctPassword) {
-                var payload = { username: user.username, email: user.email, password: user.password }
-                console.log("User is found - they should now be logged in__________")
+
+                var payload = {
+                    username: user.username,
+                    email: user.email,
+                    password: user.password
+                };
+
+                console.log("User is found - they should now be logged in__________");
                 console.log(payload);
                 var token = jwt.encode(payload, secret);
                 res.json(token);
@@ -94,12 +106,12 @@ app.post("/login", function(req, res) {
             } else {
 
                 console.log("Email or password is invalid");
-                 res.status(404).json("Email or password is invalid")
-                
+                res.status(404).json("Email or password is invalid");
+
             }
         } else {
 
-             res.status(404).json("Email or password is invalid")
+            res.status(404).json("Email or password is invalid");
 
         }
     });
@@ -111,6 +123,12 @@ app.post("/login", function(req, res) {
 
 
 app.post("/register", function(req, res) {
+
+    var emailIsValid = validator.isEmail(req.body.email); 
+
+    if(!emailIsValid){
+        res.status(401).json("Not a valid email")
+    }
     //__________________________________________________________setup variables
 
     var passwordEncrypted = bcrypt.hashSync(req.body.password, salt),
@@ -119,33 +137,43 @@ app.post("/register", function(req, res) {
         decoded = jwt.decode(token, secret);
     //__________________________________________________________END setup variables
 
+    // EMAIL VALIDATION GOES HERE
+
+
+
     User.findOne({
         where: {
             email: payload.email
         },
     }).then(function(user) {
 
-        if (user) {
+        
 
-            console.log("-------EMAIL IS IN USE -----");
-            res.status(409).json('Email already in use');
+  
+        if (!user) {
 
-
-        } else {
-
-            var user = User.build({
+              var user = User.build({
                 username: payload.username,
                 email: payload.email,
                 password: payload.password
             });
+            
 
-            user.save()
 
-            res.json(token);
+                user.save();
+
+                res.json(token);
+        }else{
+
+
+             res.status(401).json("Email already in use")
 
         }
-    })
+     
 
+
+        
+    })
 
 });
 
@@ -159,11 +187,11 @@ app.post("/api/level", function(req, res) {
     var userEmail = decoded_JWT.email;
     var userPassword = decoded_JWT.password;
 
-    console.log(decoded_JWT)
+    console.log(decoded_JWT);
 
     var levelData = {
         level: "Some level data and stuff"
-    }
+    };
 
     User.findOne({
         where: {
@@ -177,20 +205,18 @@ app.post("/api/level", function(req, res) {
             res.json(levelData);
 
         } else {
-            res.status(409)
+            res.status(409);
         }
-    })
-
-
+    });
 
 
 });
 
 app.get("*", function(req, res) {
-        res.redirect("/")
-    })
+        res.redirect("/");
+    });
     //________________________________________________________________END send api data
 
 app.listen(3000);
 
-console.log("listening on 3000")
+console.log("listening on 3000");
