@@ -2,7 +2,7 @@
 
 const express = require("express");
 const app = express();
-const validator = require("validator")
+const validator = require("validator");
 const bodyParser = require("body-parser");
 const jwt = require("jwt-simple");
 const path = require('path');
@@ -34,7 +34,7 @@ const User = connection.define("user", {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false,
-        validate:  {
+        validate: {
             isEmail: {
                 msg: "Email address must be valid"
             }
@@ -124,57 +124,62 @@ app.post("/login", function(req, res) {
 
 app.post("/register", function(req, res) {
 
-    var emailIsValid = validator.isEmail(req.body.email); 
+    var emailIsValid = validator.isEmail(req.body.email);
+    var usernameIsValidLength =  validator.isLength(req.body.username, {min:3, max: 20}); 
+    var passwordIsValidLength =  validator.isLength(req.body.password, {min:8, max: 25}); 
 
-    if(!emailIsValid){
-        res.status(401).json("Not a valid email")
+    if (!emailIsValid) {
+        res.status(401).json("Email is not valid");
+    }else if(!usernameIsValidLength ){
+        res.status(401).json("Username must be between 3 and 20 characters");
+    }else if(!passwordIsValidLength){
+        res.status(401).json("Password must be between 8 and 25 characters");
+
     }
-    //__________________________________________________________setup variables
+        else {
+        //__________________________________________________________setup variables
 
-    var passwordEncrypted = bcrypt.hashSync(req.body.password, salt),
-        payload = { username: req.body.username, email: req.body.email, password: passwordEncrypted },
-        token = jwt.encode(payload, secret),
-        decoded = jwt.decode(token, secret);
-    //__________________________________________________________END setup variables
+        var passwordEncrypted = bcrypt.hashSync(req.body.password, salt),
+            payload = { username: req.body.username, email: req.body.email, password: passwordEncrypted },
+            token = jwt.encode(payload, secret),
+            decoded = jwt.decode(token, secret);
+        //__________________________________________________________END setup variables
 
-    // EMAIL VALIDATION GOES HERE
+        // EMAIL VALIDATION GOES HERE
 
 
 
-    User.findOne({
-        where: {
-            email: payload.email
-        },
-    }).then(function(user) {
+        User.findOne({
+            where: {
+                email: payload.email
+            },
+        }).then(function(user) {
 
-        
 
-  
-        if (!user) {
 
-              var user = User.build({
-                username: payload.username,
-                email: payload.email,
-                password: payload.password
-            });
-            
+
+            if (!user) {
+
+                var user = User.build({
+                    username: payload.username,
+                    email: payload.email,
+                    password: payload.password
+                });
+
 
 
                 user.save();
 
                 res.json(token);
-        }else{
+            } else {
 
 
-             res.status(401).json("Email already in use")
+                res.status(401).json("Email already in use")
 
-        }
-     
+            }
 
-
-        
-    })
-
+        });
+    }
 });
 
 //_____________________________________________________________END save registration data to database
@@ -213,9 +218,9 @@ app.post("/api/level", function(req, res) {
 });
 
 app.get("*", function(req, res) {
-        res.redirect("/");
-    });
-    //________________________________________________________________END send api data
+    res.redirect("/");
+});
+//________________________________________________________________END send api data
 
 app.listen(3000);
 
