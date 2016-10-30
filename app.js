@@ -48,8 +48,8 @@ const User = connection.define("user", {
 
 });
 
-connection.sync();
 
+connection.sync();
 //______________________________________________________________END user model
 
 
@@ -65,12 +65,15 @@ app.use(function(req, res, next) {
 //_____________________________________________________________END enable CORS
 
 app.get("/", function(req, res) {
+    // var test = path.join(process.cwd(), process.env);
+    // console.log(test)
     res.send("Home page");
 });
 
 
 app.get("/drop", function(req, res) {
     User.drop();
+    connection.sync();
     res.redirect("/");
 });
 
