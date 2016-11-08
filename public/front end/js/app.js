@@ -426,9 +426,31 @@
 
           },
 
+          checkIfLoggedIn:function(){
+            var jwtFromBrowser = localStorage.getItem('wordmill_jwt');
+            if(jwtFromBrowser){
+              $(".user-login").text("Log out");
+              localStorage.removeItem("wordmill_jwt");
+            }else{
+              $(".user-login").text("Log In");
+            }
+
+
+            $(".user-login").on("click",function(){
+
+                if($(".user-login").text("Log out")){
+                  localStorage.removeItem("wordmill_jwt");
+                  $(".user-login").text("Log In");
+
+                }
+
+            });
+
+          },
+
 
           run: function(wordData) {
-
+              app.checkIfLoggedIn();
               app.userSubmit();
               app.levelWordList = wordData;
               app.currentWord = app.levelWordList[app.questionCount].word

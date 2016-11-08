@@ -1,7 +1,7 @@
 TODOS______________________
 
 
-verify email in in fact an email with an @.
+verify email is in fact an email with an @.
 verify password is 8 chracters
 
 

@@ -1,13 +1,15 @@
+  $(document).foundation();
 $(function() {
 
     var website = "http://localhost:3000";
 
     $(".login-validation").on("click", function() {
+
         $(".flash-message").text("");
+
         if ($(this).text() === "Currently Logged In. Click Here To Log Out") {
             localStorage.removeItem("wordmill_jwt");
             $(this).text("Not Logged In ")
-
 
         }
 
@@ -31,7 +33,7 @@ $(function() {
                 localStorage.setItem("wordmill_jwt", data);
                 $(".login-validation").text("Currently Logged In. Click Here To Log Out");
                 console.log("logged in");
-
+                window.location.replace("index.html");
             } 
 
         }).fail(function(response) {
@@ -58,7 +60,7 @@ $(function() {
     //____________________________________________________END get api level data
 
 
-    //_________________________________________________BEGIN register
+    //____________________________________________________BEGIN register
 
     $('.user-register').on('submit', function(e) {
         e.preventDefault();
@@ -85,6 +87,7 @@ $(function() {
 
                 localStorage.setItem("wordmill_jwt", data);
                 $(".login-validation").text("Currently Logged In. Click Here To Log Out");
+                window.location.replace("index.html");
 
             } 
 
