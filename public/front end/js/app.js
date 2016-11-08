@@ -426,25 +426,47 @@
 
           },
 
-          checkIfLoggedIn:function(){
-            var jwtFromBrowser = localStorage.getItem('wordmill_jwt');
-            if(jwtFromBrowser){
-              $(".user-login").text("Log out");
-              localStorage.removeItem("wordmill_jwt");
-            }else{
-              $(".user-login").text("Log In");
-            }
+          checkIfLoggedIn: function() {
 
 
-            $(".user-login").on("click",function(){
+              var jwtFromBrowser = localStorage.getItem('wordmill_jwt');
 
-                if($(".user-login").text("Log out")){
-                  localStorage.removeItem("wordmill_jwt");
+              if (jwtFromBrowser) {
+
+                  $(".user-login").text("Log out");
+                  $(".user-login").attr("href", "index.html")
+                  $(".user-login").addClass("logged-in");
+
+
+              $(".logged-in").on("click",function(e){
+                  e.preventDefault();
                   $(".user-login").text("Log In");
+                  $(".user-login").attr("href", "login_register.html");
+                  $(this).unbind('click');
+                  $(this).removeClass("logged-in");
+                  localStorage.removeItem("wordmill_jwt");
 
-                }
 
-            });
+
+
+              })
+
+
+
+              } else {
+                  $(".user-login").text("Log In");
+                  $(".user-login").attr("href", "login_register.html")
+              }
+
+              if( $(".user-login").text() === "Log In"){
+
+                $(".user-login").on("click",function(){
+                  window.location.replace("login_register.html");
+
+                })
+
+              }
+
 
           },
 

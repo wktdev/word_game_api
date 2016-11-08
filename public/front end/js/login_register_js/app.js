@@ -1,4 +1,4 @@
-  $(document).foundation();
+$(document).foundation();
 $(function() {
 
     var website = "http://localhost:3000";
