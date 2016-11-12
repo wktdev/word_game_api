@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var secret = 'aliens';
+var secret = 'aliens'; // Change in production
 
 //______________________________________________________________BEGIN user model
 

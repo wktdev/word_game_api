@@ -1,8 +1,14 @@
 TODOS______________________
 
 
-verify email is in fact an email with an @.
-verify password is 8 chracters
+Save level data in local storage ( or indexDB) on each submission.
+If user registered save data to API on each submission.
+
+Create new schema that is connected via primary key. user_game_data
+
+
+
+
 
 
 
