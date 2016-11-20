@@ -50,8 +50,19 @@
          matrix: [],
          wordLength: undefined,
          usersCorrectAnswers: [],
+         usersNumberOfCorrectAnswers: 0,
          columnMovePoints: 0,
+         lastAnswerLetterPoints: undefined,
          totalPoints: 0,
+
+         //_______________________________________BEGIN data helper method(s)
+
+         numberOfCorrectAnswers:function(){
+
+            return app.usersCorrectAnswers.length;
+         },
+
+         //_______________________________________END data helper method(s)
 
          //_______________________________________BEGIN when user opens app check for current user GAME localstorage data
 
@@ -60,8 +71,9 @@
 
              var stringData = localStorage.getItem("wordmill_user_game_data");
              var objData = JSON.parse(stringData);
-             console.log(objData);
+             // console.log(objData);
              return objData;
+
          },
 
 
@@ -72,7 +84,7 @@
             window.onload = function() {
 
                  var userDataFromLocalStorage = app.getLocalStorageUserGameData();
-                 console.log(userDataFromLocalStorage);
+                 // console.log(userDataFromLocalStorage);
 
                  try {
 
@@ -85,33 +97,40 @@
                      app.matrix = userDataFromLocalStorage.matrix;
                      app.wordLength = userDataFromLocalStorage.wordLength;
                      app.usersCorrectAnswers = userDataFromLocalStorage.usersCorrectAnswers;
-                     app.numberOfCorrectAnswers = app.usersCorrectAnswers.length
+                     app.numberOfCorrectAnswers = app.usersCorrectAnswers.length;
                      app.columnMovePoints = userDataFromLocalStorage.columnMovePoints;
+                     app.lastAnswerLetterPoints = userDataFromLocalStorage.lastAnswerLetterPoints;
                      app.totalPoints = userDataFromLocalStorage.totalPoints;
 
 
                  $(".total-points").text(userDataFromLocalStorage.totalPoints + "");
                  $(".current-medal").text();
 
-
-
                  app.usersCorrectAnswers.forEach(function(val){
 
                      $(".correct-answers").append("<li>" +val+ "</li>"); // loop
 
-                 })
+                 });
                 
-                 $(".static-column-point").text();
-                 $(".letter-moves").text();
-                 $(".letters-used").append(); // loop
+                 $(".static-column-point").text(app.columnMovePoints);
+                 $(".letter-moves").text("+" +app.pointCheck_getNumberOfDifferentLetters());
+                 $(".correct-answer-count").text(app.numberOfCorrectAnswers)
+
+                 console.log(app.totalPoints)
+                 app.lastAnswerLetterPoints.forEach(function(val){
+                    console.log(val + " this is the VAL")
+                    $(".letters-used").append("+ " + val);
+
+                 });
+                
+
+
         
 
                  } catch (e) {
                      
                      throw "New game"
                  }
-
-
 
             }
 
@@ -136,6 +155,7 @@
                  wordLength: app.wordLength,
                  usersCorrectAnswers: app.usersCorrectAnswers,
                  columnMovePoints: app.columnMovePoints,
+                 lastAnswerLetterPoints: app.lastAnswerLetterPoints,
                  totalPoints: app.totalPoints
 
              };
@@ -145,6 +165,8 @@
          },
 
          storeUserClientDataInLocalStorage: function() {
+            var userData = app.getAllUserLevelClientData();
+            console.log(userData.lastAnswerLetterPoints +" oink")
 
              localStorage.removeItem("wordmill_user_game_data");
              var userData = app.getAllUserLevelClientData();
@@ -345,7 +367,7 @@
          pointCheck_getNumberOfDifferentLetters: function() {
              var arr = app.pointCheck_getLettersThatHaveChanged(app.userSubmittedAnswer);
              var answer = arr.length;
-             console.log("You have changed " + arr.length + " number of letters.+" + arr.length + " points");
+             // console.log("You have changed " + arr.length + " number of letters.+" + arr.length + " points");
              return answer;
          },
 
@@ -358,7 +380,7 @@
 
              }, 0);
 
-             console.log("Letter points : " + total);
+             // console.log("Letter points : " + total);
 
              return total;
 
@@ -372,9 +394,9 @@
              var userAnswers = app.usersCorrectAnswers.length;
              var getPercent = userAnswers / allCorrect;
              var percentValue = (getPercent * 100).toFixed(2);
-             console.log(percentValue);
-             console.log(allCorrect - 1);
-             console.log("user correct answers: " + userAnswers);
+             // console.log(percentValue);
+             // console.log(allCorrect - 1);
+             // console.log("user correct answers: " + userAnswers);
 
              if (percentValue >= 100) {
                  return "Platinum";
@@ -404,7 +426,7 @@
              if (app.pointCheck_checkIfColumnsHaveNotMoved()) {
                  app.totalPoints += 2;
                  app.columnMovePoints = 2;
-                 console.log("Columns have not moved. +2 points ");
+                 // console.log("Columns have not moved. +2 points ");
              }
 
              app.totalPoints += app.pointCheck_getNumberOfDifferentLetters();
@@ -413,7 +435,7 @@
 
              app.totalPoints += app.pointCheck_scoreLetters(changedLetters);
 
-             console.log("total points so far: " + app.totalPoints);
+             // console.log("total points so far: " + app.totalPoints);
 
          },
 
@@ -437,7 +459,9 @@
 
          displayLetterPoints: function(userSubmittedWord) {
              var changedLetters = app.pointCheck_getLettersThatHaveChanged(userSubmittedWord);
-             console.log("changed letters weeeee:" + changedLetters);
+             app.lastAnswerLetterPoints = changedLetters;
+             console.log(app.lastAnswerLetterPoints)
+             console.log(changedLetters);
              $(".letters-used").empty();
              changedLetters.forEach(function(val) {
 
@@ -467,6 +491,7 @@
          //______________________________________END Check how many columns moved on user submission
          userSubmit: function() {
              $("#answer-submit-button").on("click", function() {
+
 
                  var word = "";
 
@@ -498,14 +523,15 @@
                          });
                      });
 
-                     app.storeUserClientDataInLocalStorage();
-
+                   
 
                      app.displayUsersAnswers();
                      app.displayColumnMovePoints();
                      app.displayNumberOfChangedLettersPoints();
                      app.displayLetterPoints(word);
                      app.displayMedal();
+                     app.storeUserClientDataInLocalStorage();
+
 
 
                  } else {
@@ -529,8 +555,7 @@
 
                  $(".correct-answer-count").text(app.usersCorrectAnswers.length);
 
-
-                 console.log(app.getMedal());
+                 // console.log(app.getMedal());
 
 
              });
